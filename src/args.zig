@@ -59,7 +59,7 @@ pub fn parseArgs(allocator: Allocator) CLIError!Command {
                     const parsedPaths = try parseRemainingArgs(&argsIterator, &sort, allocator);
                     result = Command{ .merge = MergeArgs{
                         .paths = parsedPaths,
-                        .sort = false,
+                        .sort = sort,
                     } };
                 },
                 else => unreachable,
