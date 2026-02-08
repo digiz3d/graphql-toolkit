@@ -7,6 +7,7 @@ It can stitch and merge schema files together.
 ## Demo
 
 Merging schema files:
+
 ![Demo showing usage of gqlt](./demo/demo.gif)
 
 ## Usage
@@ -18,6 +19,10 @@ or even, when your shell (e.g. zsh) supports it:
 The last path is the output file.
 
 _note: bash is also supported for recursive globs (path/\*\*/\*.gql) with `shopt -s globstar`_
+
+### Options
+
+`--sort`: sort the definitions and fields by name in the merged document.
 
 ## Install
 
