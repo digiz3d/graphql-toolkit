@@ -4,6 +4,7 @@ const strEq = @import("utils/utils.zig").strEq;
 
 const MergeArgs = struct {
     paths: [][]const u8,
+    sort: bool,
 };
 
 const PrintASTArgs = struct {
@@ -45,17 +46,20 @@ pub fn parseArgs(allocator: Allocator) CLIError!Command {
 
     switch (command) {
         .ast, .merge => |cmd| {
-            const parsedPaths = try parsePaths(&argsIterator, allocator);
+            var sort = false;
 
             switch (cmd) {
                 .ast => {
+                    const parsedPaths = try parseRemainingArgs(&argsIterator, &sort, allocator);
                     result = Command{ .ast = PrintASTArgs{
                         .paths = parsedPaths,
                     } };
                 },
                 .merge => {
+                    const parsedPaths = try parseRemainingArgs(&argsIterator, &sort, allocator);
                     result = Command{ .merge = MergeArgs{
                         .paths = parsedPaths,
+                        .sort = false,
                     } };
                 },
                 else => unreachable,
@@ -69,11 +73,15 @@ pub fn parseArgs(allocator: Allocator) CLIError!Command {
     return result;
 }
 
-fn parsePaths(args: *std.process.ArgIterator, allocator: Allocator) CLIError![][]const u8 {
+fn parseRemainingArgs(args: *std.process.ArgIterator, sort: *bool, allocator: Allocator) CLIError![][]const u8 {
     var paths: std.ArrayList([]const u8) = .empty;
     defer paths.deinit(allocator);
 
     while (args.next()) |path| {
+        if (strEq(path, "--sort")) {
+            sort.* = true;
+            continue;
+        }
         const duppedPath = allocator.dupe(u8, path) catch return CLIError.UnexpectedMemoryError;
         paths.append(allocator, duppedPath) catch return CLIError.UnexpectedMemoryError;
     }

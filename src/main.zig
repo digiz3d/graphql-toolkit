@@ -79,7 +79,7 @@ pub fn main() !void {
             }
 
             var merger = Merger.init(allocator);
-            const mergedDocument = try merger.mergeIntoSingleDocument(documents.items);
+            const mergedDocument = try merger.mergeIntoSingleDocument(documents.items, .{ .sort = true });
             defer mergedDocument.deinit();
 
             var printer = try Printer.init(allocator, mergedDocument);

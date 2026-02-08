@@ -14,6 +14,7 @@ const UnionTypeExtension = @import("ast/union_type_extension.zig").UnionTypeExte
 const Interface = @import("ast/interface.zig").Interface;
 const Directive = @import("ast/directive.zig").Directive;
 const FieldDefinition = @import("ast/field_definition.zig").FieldDefinition;
+const sort = @import("utils/sort.zig");
 
 pub const MergeError = error{
     UnexpectedMemoryError,
@@ -67,7 +68,7 @@ pub const Merger = struct {
         }
     }
 
-    pub fn mergeIntoSingleDocument(self: *Merger, documents: []const Document) MergeError!Document {
+    pub fn mergeIntoSingleDocument(self: *Merger, documents: []const Document, opts: struct { sort: bool = false }) MergeError!Document {
         // data structure is like:
         // {
         //   "objectTypeDefinition_Object": [objectTypeExtension_obj1, objectTypeDefinition_obj2],
@@ -124,7 +125,7 @@ pub const Merger = struct {
                             else => unreachable,
                         }) catch return MergeError.UnexpectedMemoryError;
                     }
-                    const mergedDefinition = try mergeObjectTypeDefinitions(self, objectTypeDefinitions);
+                    const mergedDefinition = try mergeObjectTypeDefinitions(self, objectTypeDefinitions, opts.sort);
                     mergedDefinitions.append(self.allocator, ExecutableDefinition{ .objectTypeDefinition = mergedDefinition }) catch return MergeError.UnexpectedMemoryError;
                 },
                 .unionTypeDefinition, .unionTypeExtension => {
@@ -138,7 +139,7 @@ pub const Merger = struct {
                             else => unreachable,
                         }) catch return MergeError.UnexpectedMemoryError;
                     }
-                    const mergedDefinition = try mergeUnionTypeDefinitions(self, unionTypeDefinitions);
+                    const mergedDefinition = try mergeUnionTypeDefinitions(self, unionTypeDefinitions, opts.sort);
                     mergedDefinitions.append(self.allocator, ExecutableDefinition{ .unionTypeDefinition = mergedDefinition }) catch return MergeError.UnexpectedMemoryError;
                 },
                 .interfaceTypeDefinition, .interfaceTypeExtension => {
@@ -153,7 +154,7 @@ pub const Merger = struct {
                         }) catch return MergeError.UnexpectedMemoryError;
                     }
 
-                    const mergedDefinition = try mergeInterfaceTypeDefinitions(self, interfaceTypeDefinitions);
+                    const mergedDefinition = try mergeInterfaceTypeDefinitions(self, interfaceTypeDefinitions, opts.sort);
                     mergedDefinitions.append(self.allocator, ExecutableDefinition{ .interfaceTypeDefinition = mergedDefinition }) catch return MergeError.UnexpectedMemoryError;
                 },
                 .inputObjectTypeDefinition, .inputObjectTypeExtension => {
@@ -168,7 +169,7 @@ pub const Merger = struct {
                         }) catch return MergeError.UnexpectedMemoryError;
                     }
 
-                    const mergedDefinition = try mergeInputObjectTypeDefinitions(self, inputObjectTypeDefinitions);
+                    const mergedDefinition = try mergeInputObjectTypeDefinitions(self, inputObjectTypeDefinitions, opts.sort);
                     mergedDefinitions.append(self.allocator, ExecutableDefinition{ .inputObjectTypeDefinition = mergedDefinition }) catch return MergeError.UnexpectedMemoryError;
                 },
                 .operationDefinition, .fragmentDefinition => {
@@ -176,6 +177,10 @@ pub const Merger = struct {
                 },
                 else => continue, // TODO: handle other types of definitions
             }
+        }
+
+        if (opts.sort) {
+            std.mem.sort(ExecutableDefinition, mergedDefinitions.items, {}, sort.executableDefinitionLessThan);
         }
 
         if (unmergeableDefinitions.items.len > 0) {
@@ -198,7 +203,7 @@ pub const Merger = struct {
     }
 };
 
-fn mergeObjectTypeDefinitions(self: *Merger, objectTypeDefinitions: ArrayList(ObjectTypeDefinition)) MergeError!ObjectTypeDefinition {
+fn mergeObjectTypeDefinitions(self: *Merger, objectTypeDefinitions: ArrayList(ObjectTypeDefinition), sortFields: bool) MergeError!ObjectTypeDefinition {
     var name: ?[]const u8 = null;
     var description: ?[]const u8 = null;
     var interfaces: ArrayList(Interface) = .empty;
@@ -217,6 +222,10 @@ fn mergeObjectTypeDefinitions(self: *Merger, objectTypeDefinitions: ArrayList(Ob
         fields.appendSlice(self.allocator, objectTypeDef.fields) catch return MergeError.UnexpectedMemoryError;
     }
 
+    if (sortFields) {
+        std.mem.sort(FieldDefinition, fields.items, {}, sort.fieldDefinitionLessThan);
+    }
+
     return ObjectTypeDefinition{
         .allocator = self.allocator,
         .name = name.?,
@@ -228,7 +237,7 @@ fn mergeObjectTypeDefinitions(self: *Merger, objectTypeDefinitions: ArrayList(Ob
     };
 }
 
-fn mergeUnionTypeDefinitions(self: *Merger, unionTypeDefinitions: ArrayList(UnionTypeDefinition)) MergeError!UnionTypeDefinition {
+fn mergeUnionTypeDefinitions(self: *Merger, unionTypeDefinitions: ArrayList(UnionTypeDefinition), sortTypes: bool) MergeError!UnionTypeDefinition {
     var name: ?[]const u8 = null;
     var description: ?[]const u8 = null;
     var types: ArrayList(Type) = .empty;
@@ -245,6 +254,10 @@ fn mergeUnionTypeDefinitions(self: *Merger, unionTypeDefinitions: ArrayList(Unio
         directives.appendSlice(self.allocator, unionTypeDef.directives) catch return MergeError.UnexpectedMemoryError;
     }
 
+    if (sortTypes) {
+        std.mem.sort(Type, types.items, {}, sort.namedTypeLessThan);
+    }
+
     return UnionTypeDefinition{
         .allocator = self.allocator,
         .name = name.?,
@@ -255,7 +268,7 @@ fn mergeUnionTypeDefinitions(self: *Merger, unionTypeDefinitions: ArrayList(Unio
     };
 }
 
-fn mergeInterfaceTypeDefinitions(self: *Merger, interfaceTypeDefinitions: ArrayList(InterfaceTypeDefinition)) MergeError!InterfaceTypeDefinition {
+fn mergeInterfaceTypeDefinitions(self: *Merger, interfaceTypeDefinitions: ArrayList(InterfaceTypeDefinition), sortFields: bool) MergeError!InterfaceTypeDefinition {
     var name: ?[]const u8 = null;
     var description: ?[]const u8 = null;
     var interfaces: ArrayList(Interface) = .empty;
@@ -274,6 +287,10 @@ fn mergeInterfaceTypeDefinitions(self: *Merger, interfaceTypeDefinitions: ArrayL
         fields.appendSlice(self.allocator, interfaceTypeDef.fields) catch return MergeError.UnexpectedMemoryError;
     }
 
+    if (sortFields) {
+        std.mem.sort(FieldDefinition, fields.items, {}, sort.fieldDefinitionLessThan);
+    }
+
     return InterfaceTypeDefinition{
         .allocator = self.allocator,
         .name = name.?,
@@ -285,7 +302,7 @@ fn mergeInterfaceTypeDefinitions(self: *Merger, interfaceTypeDefinitions: ArrayL
     };
 }
 
-fn mergeInputObjectTypeDefinitions(self: *Merger, inputObjectTypeDefinitions: ArrayList(InputObjectTypeDefinition)) MergeError!InputObjectTypeDefinition {
+fn mergeInputObjectTypeDefinitions(self: *Merger, inputObjectTypeDefinitions: ArrayList(InputObjectTypeDefinition), sortFields: bool) MergeError!InputObjectTypeDefinition {
     var name: ?[]const u8 = null;
     var description: ?[]const u8 = null;
     var directives: ArrayList(Directive) = .empty;
@@ -300,6 +317,10 @@ fn mergeInputObjectTypeDefinitions(self: *Merger, inputObjectTypeDefinitions: Ar
         }
         directives.appendSlice(self.allocator, inputObjectTypeDefinition.directives) catch return MergeError.UnexpectedMemoryError;
         fields.appendSlice(self.allocator, inputObjectTypeDefinition.fields) catch return MergeError.UnexpectedMemoryError;
+    }
+
+    if (sortFields) {
+        std.mem.sort(InputValueDefinition, fields.items, {}, sort.inputValueDefinitionLessThan);
     }
 
     return InputObjectTypeDefinition{

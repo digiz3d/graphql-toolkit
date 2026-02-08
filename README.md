@@ -44,7 +44,7 @@ Tools we compare **gqlt** with:
 | **Speed**                          | fastest 🚀                                    | slow                  | fast                                                                                               |
 | **Limitations**                    | <ul><li>no directives concatenation</li></ul> | none                  | <ul><li>no object/input/union/interface/enum merging</li><li>no directives concatenation</li></ul> |
 | **Indentation**                    | ✅                                            | ✅                    | ❌ inconsistent                                                                                    |
-| **Order definitions**              | ❌                                            | ✅                    | ❌                                                                                                 |
+| **Sort definitions**               | ✅                                            | ✅                    | ❌                                                                                                 |
 | **Descriptions**                   | ✅                                            | ✅                    | ✅                                                                                                 |
 | **Comments**                       | ❌                                            | ❌                    | ✅                                                                                                 |
 | **Double quotes in block strings** | ✅                                            | ✅                    | ❌                                                                                                 |
