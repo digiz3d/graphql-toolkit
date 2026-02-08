@@ -44,15 +44,15 @@ Tools we compare **gqlt** with:
 [@graphql-tools/merge](https://www.npmjs.com/package/@graphql-tools/merge)  
 [gqlmerge](https://github.com/mununki/gqlmerge)
 
-|                                    | gqlt                                          | @graphql-tools/merge) | gqlmerge                                                                                           |
-| ---------------------------------- | --------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------- |
-| **Speed**                          | fastest 🚀                                    | slow                  | fast                                                                                               |
-| **Limitations**                    | <ul><li>no directives concatenation</li></ul> | none                  | <ul><li>no object/input/union/interface/enum merging</li><li>no directives concatenation</li></ul> |
-| **Indentation**                    | ✅                                            | ✅                    | ❌ inconsistent                                                                                    |
-| **Sort definitions**               | ✅                                            | ✅                    | ❌                                                                                                 |
-| **Descriptions**                   | ✅                                            | ✅                    | ✅                                                                                                 |
-| **Comments**                       | ❌                                            | ❌                    | ✅                                                                                                 |
-| **Double quotes in block strings** | ✅                                            | ✅                    | ❌                                                                                                 |
+|                                    | gqlt                                          | @graphql-tools/merge | gqlmerge                                                                                           |
+| ---------------------------------- | --------------------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
+| **Speed**                          | fastest 🚀                                    | slow                 | fast                                                                                               |
+| **Limitations**                    | <ul><li>no directives concatenation</li></ul> | none                 | <ul><li>no object/input/union/interface/enum merging</li><li>no directives concatenation</li></ul> |
+| **Indentation**                    | ✅                                            | ✅                   | ❌ inconsistent                                                                                    |
+| **Sort definitions**               | ✅                                            | ✅                   | ❌                                                                                                 |
+| **Descriptions**                   | ✅                                            | ✅                   | ✅                                                                                                 |
+| **Comments**                       | ❌                                            | ❌                   | ✅                                                                                                 |
+| **Double quotes in block strings** | ✅                                            | ✅                   | ❌                                                                                                 |
 
 see [benchmarks](./benchmark/README.md)
 
