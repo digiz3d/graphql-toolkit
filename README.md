@@ -7,6 +7,7 @@ It can stitch and merge schema files together.
 ## Demo
 
 Merging schema files:
+
 ![Demo showing usage of gqlt](./demo/demo.gif)
 
 ## Usage
@@ -18,6 +19,10 @@ or even, when your shell (e.g. zsh) supports it:
 The last path is the output file.
 
 _note: bash is also supported for recursive globs (path/\*\*/\*.gql) with `shopt -s globstar`_
+
+### Options
+
+`--sort`: sort the definitions and fields by name in the merged document.
 
 ## Install
 
@@ -44,7 +49,7 @@ Tools we compare **gqlt** with:
 | **Speed**                          | fastest 🚀                                    | slow                  | fast                                                                                               |
 | **Limitations**                    | <ul><li>no directives concatenation</li></ul> | none                  | <ul><li>no object/input/union/interface/enum merging</li><li>no directives concatenation</li></ul> |
 | **Indentation**                    | ✅                                            | ✅                    | ❌ inconsistent                                                                                    |
-| **Order definitions**              | ❌                                            | ✅                    | ❌                                                                                                 |
+| **Sort definitions**               | ✅                                            | ✅                    | ❌                                                                                                 |
 | **Descriptions**                   | ✅                                            | ✅                    | ✅                                                                                                 |
 | **Comments**                       | ❌                                            | ❌                    | ✅                                                                                                 |
 | **Double quotes in block strings** | ✅                                            | ✅                    | ❌                                                                                                 |

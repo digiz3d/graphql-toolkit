@@ -1,0 +1,38 @@
+"""
+Nice object
+"""
+type FirstObject {
+  material: String!
+  name: String!
+}
+
+type SecondObject {
+  "this is a new field"
+  firstProperty: String!
+  secondProperty: String!
+}
+
+input FirstInput {
+  field1: ID!
+  field2: ID!
+}
+
+input SecondInput {
+  field1: ID!
+  field2: ID!
+}
+
+interface FirstInterface {
+  field1: String!
+  "with some description"
+  field2(input: ID!): String!
+}
+
+interface SecondInterface {
+  field1: ID!
+  field2: ID!
+}
+
+union FirstUnion = Nope | Yup
+
+union SecondUnion = Nope2 | Yup2

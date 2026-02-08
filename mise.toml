@@ -4,6 +4,7 @@ zls = "0.15.1"
 
 [tasks.main]
 run = "zig run src/main.zig -- $@"
+run_windows = "zig run src/main.zig --"
 
 [tasks.unit]
 run = "zig test src/main.zig"

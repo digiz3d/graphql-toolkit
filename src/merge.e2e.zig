@@ -9,6 +9,14 @@ const Printer = @import("print.zig").Printer;
 const normalizeLineEndings = @import("utils/utils.zig").normalizeLineEndings;
 
 test "e2e-merge" {
+    try testMerge(false, "tests/merger.e2e.snapshot.graphql");
+}
+
+test "e2e-merge-sort" {
+    try testMerge(true, "tests/merger.e2e.snapshot-sort.graphql");
+}
+
+fn testMerge(sort: bool, fixturePath: []const u8) !void {
     const alloc = std.testing.allocator;
     const typeDefsDir = "tests/e2e-merge";
 
@@ -52,14 +60,14 @@ test "e2e-merge" {
         }
         alloc.free(documentsSlice);
     }
-    const mergedDocument = try merger.mergeIntoSingleDocument(documentsSlice);
+    const mergedDocument = try merger.mergeIntoSingleDocument(documentsSlice, .{ .sort = sort });
     defer mergedDocument.deinit();
 
     var printer = try Printer.init(alloc, mergedDocument);
     const gql = try printer.getGql();
     defer alloc.free(gql);
 
-    const expectedText = try getFileContent("tests/merger.e2e.snapshot.graphql", testing.allocator);
+    const expectedText = try getFileContent(fixturePath, testing.allocator);
     defer testing.allocator.free(expectedText);
 
     const normalizedText = normalizeLineEndings(testing.allocator, gql);
