@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/digiz3d/graphql-toolkit/compare/v1.0.3...v1.1.0) (2026-02-08)
+
+
+### Features
+
+* support sorting ([#68](https://github.com/digiz3d/graphql-toolkit/issues/68)) ([429ce9a](https://github.com/digiz3d/graphql-toolkit/commit/429ce9af4d9bc1e8dc4774a43770bbc415e34415))
+
 ## [1.0.3](https://github.com/digiz3d/graphql-toolkit/compare/v1.0.2...v1.0.3) (2026-02-07)
 
 
